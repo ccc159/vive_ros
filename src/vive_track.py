@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import openvr_wrapper
-import time
 import rospy
-import sys
 
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Point
@@ -32,5 +30,5 @@ if __name__ == '__main__':
         vive_poseStamped.pose.orientation = Quaternion(*quaternion)
         vive_poseStamped.header.stamp = rospy.Time.now()
         pub.publish(vive_poseStamped)
-        
+
     rate.sleep()
