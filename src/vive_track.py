@@ -1,27 +1,36 @@
 #!/usr/bin/env python3
 import openvr_wrapper
 import time
+import rospy
 import sys
 
-v = openvr_wrapper.OpenvrWrapper()
-v.print_discovered_objects()
+from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Point
+from geometry_msgs.msg import Quaternion
 
-if len(sys.argv) == 1:
-	interval = 1 / 250
-elif len(sys.argv) == 2:
-	interval = 1 / float(sys.argv[0])
-else:
-	print("Invalid number of arguments")
-	interval = False
 
-if interval:
-	while (True):
-		start = time.time()
-		txt = ""
-		for each in v.devices["tracker_1"].get_pose_euler():
-			txt += "%.4f" % each
-			txt += " "
-		print("\r" + txt, end="")
-		sleep_time = interval - (time.time() - start)
-		if sleep_time > 0:
-			time.sleep(sleep_time)
+
+if __name__ == '__main__':
+    #initial ros node
+    rospy.init_node('vive_pose', anonymous=True)
+    pub = rospy.Publisher("/vive_pose", PoseStamped, queue_size=10)
+
+    #set refresh rate
+    rate = rospy.Rate(120)
+
+    #initial vive
+    vive = openvr_wrapper.OpenvrWrapper()
+    rospy.loginfo("=== vive ros started ===")
+    vive.print_discovered_objects()
+    vive_poseStamped = PoseStamped()
+    vive_poseStamped.header.frame_id = 'world'
+
+    # get the poseStamped from pose
+    while not rospy.is_shutdown():
+        translation,quaternion = vive.devices["tracker_1"].get_pose_quaternion()
+        vive_poseStamped.pose.position = Point(*translation)
+        vive_poseStamped.pose.orientation = Quaternion(*quaternion)
+        vive_poseStamped.header.stamp = rospy.Time.now()
+        pub.publish(vive_poseStamped)
+        
+    rate.sleep()

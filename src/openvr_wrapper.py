@@ -29,7 +29,7 @@ def convert_to_quaternion(pose_mat):
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
-    return [x,y,z,r_w,r_x,r_y,r_z]
+    return [x,y,z],[r_x,r_y,r_z,r_w]
 
 #Define a class to make it easy to append pose matricies and convert to both Euler and Quaternion for plotting
 class pose_sample_buffer():
@@ -47,7 +47,7 @@ class pose_sample_buffer():
         self.r_x = []
         self.r_y = []
         self.r_z = []
-    
+
     def append(self,pose_mat,t):
         self.time.append(t)
         self.x.append(pose_mat[0][3])
@@ -67,13 +67,13 @@ class VRTrackedDevice():
         self.device_class = device_class
         self.index = index
         self.vr = vr_obj
-        
+
     def get_serial(self):
         return self.vr.getStringTrackedDeviceProperty(self.index,openvr.Prop_SerialNumber_String).decode('utf-8')
-    
+
     def get_model(self):
         return self.vr.getStringTrackedDeviceProperty(self.index,openvr.Prop_ModelNumber_String).decode('utf-8')
-        
+
     def sample(self,num_samples,sample_rate):
         interval = 1/sample_rate
         rtn = pose_sample_buffer()
@@ -86,11 +86,11 @@ class VRTrackedDevice():
             if sleep_time>0:
                 time.sleep(sleep_time)
         return rtn
-        
+
     def getEuler(self):
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_euler(pose[self.index].mDeviceToAbsoluteTracking)
-    
+
     def get_pose_quaternion(self):
         pose = self.vr.getDeviceToAbsoluteTrackingPose(openvr.TrackingUniverseStanding, 0,openvr.k_unMaxTrackedDeviceCount)
         return convert_to_quaternion(pose[self.index].mDeviceToAbsoluteTracking)
@@ -107,7 +107,7 @@ class OpenvrWrapper():
     def __init__(self):
         # Initialize OpenVR in the 
         self.vr = openvr.init(openvr.VRApplication_Other)
-        
+
         # Initializing object to hold indexes for various tracked objects 
         self.object_names = {"Tracking Reference":[],"HMD":[],"Controller":[],"Tracker":[]}
         self.devices = {}
@@ -133,14 +133,14 @@ class OpenvrWrapper():
                     device_name = "tracking_reference_"+str(len(self.object_names["Tracking Reference"])+1)
                     self.object_names["Tracking Reference"].append(device_name)
                     self.devices[device_name] = vr_tracking_reference(self.vr,i,"Tracking Reference")
-    
+
     def rename_device(self,old_device_name,new_device_name):
         self.devices[new_device_name] = self.devices.pop(old_device_name)
         for i in range(len(self.object_names[self.devices[new_device_name].device_class])):
             if self.object_names[self.devices[new_device_name].device_class][i] == old_device_name:
                 self.object_names[self.devices[new_device_name].device_class][i] = new_device_name
-    
-    def print_discovered_objects(self):   
+
+    def print_discovered_objects(self):
         for device_type in self.object_names:
             plural = device_type
             if len(self.object_names[device_type])!=1:
