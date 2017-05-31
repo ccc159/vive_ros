@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import openvr_wrapper
+import _openvr_wrapper
 import rospy
 
 from geometry_msgs.msg import PoseStamped
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(120)
 
     #initial vive
-    vive = openvr_wrapper.OpenvrWrapper()
+    vive = _openvr_wrapper.OpenvrWrapper()
     rospy.loginfo("=== vive ros started ===")
     vive.print_discovered_objects()
     vive_poseStamped = PoseStamped()
