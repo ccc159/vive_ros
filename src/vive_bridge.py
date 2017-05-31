@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import rospy
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
