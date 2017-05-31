@@ -14,14 +14,23 @@ def callback(msg):
 
 def main():
     global pub
-    rospy.init_node('vive_bridge', anonymous=True)
+    rospy.init_node('vive_fake', anonymous=True)
     pub = rospy.Publisher("/mavros/mocap/pose",PoseStamped,queue_size=10)
-    rospy.Subscriber("/vive/pose", Pose, callback)
-    rospy.spin()
+    rate = rospy.Rate(100)
+    while not rospy.is_shutdown():
+        pub.publish(poseStamp)
+    rate.sleep()
+
 
 
 if __name__ == '__main__':
     pub = None
     poseStamp = PoseStamped()
     poseStamp.header.frame_id = 'world'
+
+    poseStamp.pose.position.x = 1
+    poseStamp.pose.position.y = 2
+    poseStamp.pose.position.z = 3
+    poseStamp.pose.orientation.w = 1
+
     main()
