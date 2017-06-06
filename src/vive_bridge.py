@@ -9,6 +9,7 @@ def callback(msg):
     pose = msg.data
     poseStamp.pose = pose
     poseStamp.header.stamp = rospy.Time.now()
+    print rospy.Time.now() + ": receiving and publishing..."
     pub.publish(poseStamp)
 
 
@@ -17,6 +18,7 @@ def main():
     rospy.init_node('vive_bridge', anonymous=True)
     pub = rospy.Publisher("/mavros/mocap/pose",PoseStamped,queue_size=10)
     rospy.Subscriber("/vive/pose", Pose, callback)
+    rospy.loginfo("Vive Bridge Started")
     rospy.spin()
 
 
