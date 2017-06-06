@@ -29,7 +29,10 @@ def convert_to_quaternion(pose_mat):
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
-    return x,y,z,r_x,r_y,r_z,r_w
+
+
+    #return x,y,z,r_x,r_y,r_z,r_w
+    return x,-z,y,r_x,-r_z,r_y,r_w
 
 #Define a class to make it easy to append pose matricies and convert to both Euler and Quaternion for plotting
 class pose_sample_buffer():
