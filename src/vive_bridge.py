@@ -18,7 +18,7 @@ def main():
     rospy.init_node('vive_bridge', anonymous=True)
     pub = rospy.Publisher("/mavros/mocap/pose",PoseStamped,queue_size=10)
     rospy.Subscriber("/vive/pose", Pose, callback)
-    rospy.loginfo("Vive Bridge Started")
+    rospy.loginfo("====Vive Bridge Started====")
     rospy.spin()
 
 
